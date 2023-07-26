@@ -58,7 +58,21 @@ arg=${arg:2}
 
 echo $arg
 
+if [ ! -d "build" ]; then
+  mkdir build
+fi
+
+cd build  || exit
+
 # Build process
-cd build || exit
-cmake ..
-make $arg
+
+# in case tests, build first
+if [ "$arg" = "test" ]; then
+  make all
+  GTEST_COLOR=1 ctest -VV
+  exit 0
+fi
+
+
+cmake ..  || exit
+make $arg || exit
